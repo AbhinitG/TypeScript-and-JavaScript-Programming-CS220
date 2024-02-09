@@ -166,4 +166,29 @@ describe("mapToGreen", () => {
 
 describe("mapFlipColors", () => {
   // Tests for mapFlipColors go here.
+  it("should create an image with the same dimensions as the result from flipColors", () => {
+    const purpleImage = Image.create(10, 10, [160, 32, 240]);
+    const imgFromFlip = flipColors(purpleImage);
+    const imgFromMap = mapFlipColors(purpleImage);
+
+    assert(imgFromFlip.width === imgFromMap.width);
+    assert(imgFromFlip.height === imgFromMap.height);
+  });
+
+  it("should create an image with the same result as flipColors", () => {
+    const purpleImage = Image.create(10, 10, [160, 32, 240]);
+    const imgFromFlip = flipColors(purpleImage);
+    const imgFromMap = mapFlipColors(purpleImage);
+
+    for (let i = 0; i < imgFromMap.width; ++i) {
+      for (let j = 0; j < imgFromMap.height; ++j) {
+        const mapColors = imgFromMap.getPixel(i, j);
+        const flipColors = imgFromFlip.getPixel(i, j);
+
+        assert(mapColors[0] === flipColors[0]);
+        assert(mapColors[1] === flipColors[1]);
+        assert(mapColors[2] === flipColors[2]);
+      }
+    }
+  });
 });

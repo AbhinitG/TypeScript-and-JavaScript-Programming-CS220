@@ -102,5 +102,11 @@ export function mapToGreen(img: Image): Image {
  */
 export function mapFlipColors(img: Image): Image {
   // TODO
-  return img.copy();
+  const newImg = imageMap(img, color => [
+    Math.floor((color[1] + color[2]) / 2),
+    Math.floor((color[0] + color[2]) / 2),
+    Math.floor((color[0] + color[1]) / 2)
+  ]);
+
+  return newImg;
 }
