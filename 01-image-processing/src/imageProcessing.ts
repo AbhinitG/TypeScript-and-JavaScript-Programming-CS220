@@ -18,6 +18,7 @@ export function saturateGreen(img: Image): Image {
       }
     }
   }
+  
   return newImg;
 }
 
@@ -41,6 +42,7 @@ export function flipColors(img: Image): Image {
       newImg.setPixel(i, j, [newFirstColor, newSecondColor, newThirdColor]);
     }
   }
+
   return newImg;
 }
 
@@ -71,7 +73,13 @@ export function mapLine(img: Image, lineNo: number, func: (c: Color) => Color): 
  */
 export function imageMap(img: Image, func: (c: Color) => Color): Image {
   // TODO
-  return img.copy();
+  const newImg = img.copy();
+
+  for (let j = 0; j < newImg.height; ++j) {
+    mapLine(newImg, j, func);
+  }
+
+  return newImg;
 }
 
 /**

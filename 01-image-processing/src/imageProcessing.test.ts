@@ -114,6 +114,25 @@ describe("mapLine", () => {
 
 describe("imageMap", () => {
   // Tests for imageMap go here.
+  it("should create a new image with the same dimensions as img", () => {
+    const purpleImage = Image.create(10, 10, [160, 32, 240]);
+    const mappedImage = imageMap(purpleImage, color => [255, color[1], color[2]]);
+
+    assert(mappedImage.width === purpleImage.width);
+    assert(mappedImage.height === purpleImage.height);
+  });
+
+  it("should have the value of each pixel in the new image be a result of func", () => {
+    const purpleImage = Image.create(10, 10, [160, 32, 240]);
+    const mappedImage = imageMap(purpleImage, color => [255, color[1], color[2]]);
+
+    // the red color of every pixel in the image should be saturated
+    for (let i = 0; i < mappedImage.width; ++i) {
+      for (let j = 0; j < mappedImage.height; ++j) {
+        assert(mappedImage.getPixel(i, j)[0] === 255);
+      }
+    }
+  });
 });
 
 describe("mapToGreen", () => {
