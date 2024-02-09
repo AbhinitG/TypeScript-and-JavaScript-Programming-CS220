@@ -12,7 +12,7 @@ export function saturateGreen(img: Image): Image {
   for (let i = 0; i < newImg.width; ++i) {
     for (let j = 0; j < newImg.height; ++j) {
       const curColor = newImg.getPixel(i, j);
-      
+
       if (curColor[1] !== COLORS.GREEN[1]) {
         newImg.setPixel(i, j, [curColor[0], COLORS.GREEN[1], curColor[2]]);
       }
@@ -105,7 +105,7 @@ export function mapFlipColors(img: Image): Image {
   const newImg = imageMap(img, color => [
     Math.floor((color[1] + color[2]) / 2),
     Math.floor((color[0] + color[2]) / 2),
-    Math.floor((color[0] + color[1]) / 2)
+    Math.floor((color[0] + color[1]) / 2),
   ]);
 
   return newImg;

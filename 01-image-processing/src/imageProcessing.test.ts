@@ -43,9 +43,9 @@ describe("saturateGreen", () => {
         const newP = gbImage.getPixel(i, j);
         const ogP = blackImage.getPixel(i, j);
 
-        assert(newP[0] === ogP[0], "The red channel should not have changed.")
-        assert(newP[1] === 255, "The green channel should be saturated.")
-        assert(newP[2] === ogP[2], "The blue channel should not have changed.")
+        assert(newP[0] === ogP[0], "The red channel should not have changed.");
+        assert(newP[1] === 255, "The green channel should be saturated.");
+        assert(newP[2] === ogP[2], "The blue channel should not have changed.");
       }
     }
   });
