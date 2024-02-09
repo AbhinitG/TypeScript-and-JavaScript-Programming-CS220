@@ -29,7 +29,19 @@ export function saturateGreen(img: Image): Image {
  */
 export function flipColors(img: Image): Image {
   // TODO
-  return img.copy();
+  const newImg = img.copy();
+
+  for (let i = 0; i < newImg.width; ++i) {
+    for (let j = 0; j < newImg.height; ++j) {
+      const ogColors = img.getPixel(i, j);
+      const newFirstColor = Math.floor((ogColors[1] + ogColors[2]) / 2);
+      const newSecondColor = Math.floor((ogColors[0] + ogColors[2]) / 2);
+      const newThirdColor = Math.floor((ogColors[0] + ogColors[1]) / 2);
+
+      newImg.setPixel(i, j, [newFirstColor, newSecondColor, newThirdColor]);
+    }
+  }
+  return newImg;
 }
 
 /**

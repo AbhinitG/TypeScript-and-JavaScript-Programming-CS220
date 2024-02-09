@@ -65,6 +65,21 @@ describe("flipColors", () => {
   });
 
   // More tests for flipColors go here.
+  it("should correctly flip every pixel", () => {
+    const purpleImage = Image.create(10, 10, [160, 32, 240]);
+    const flippedPurpleImage = flipColors(purpleImage);
+
+    for (let i = 0; i < flippedPurpleImage.width; ++i) {
+      for (let j = 0; j < flippedPurpleImage.height; ++j) {
+        const newP = flippedPurpleImage.getPixel(i, j);
+        const ogP = purpleImage.getPixel(i, j);
+
+        assert(newP[0] === Math.floor(Math.floor((ogP[1] + ogP[2]) / 2)));
+        assert(newP[1] === Math.floor(Math.floor((ogP[0] + ogP[2]) / 2)));
+        assert(newP[2] === Math.floor(Math.floor((ogP[0] + ogP[1]) / 2)));
+      }
+    }
+  });
 });
 
 describe("mapLine", () => {
