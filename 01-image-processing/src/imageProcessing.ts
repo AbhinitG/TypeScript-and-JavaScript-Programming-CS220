@@ -18,7 +18,7 @@ export function saturateGreen(img: Image): Image {
       }
     }
   }
-  
+
   return newImg;
 }
 
@@ -89,7 +89,9 @@ export function imageMap(img: Image, func: (c: Color) => Color): Image {
  */
 export function mapToGreen(img: Image): Image {
   // TODO
-  return img.copy();
+  const newImg = imageMap(img, color => [color[0], 255, color[2]]);
+
+  return newImg;
 }
 
 /**

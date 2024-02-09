@@ -137,6 +137,31 @@ describe("imageMap", () => {
 
 describe("mapToGreen", () => {
   // Tests for mapToGreen go here.
+  it("should create an image with the same dimensions as the result from saturateGreen", () => {
+    const purpleImage = Image.create(10, 10, [160, 32, 240]);
+    const imgFromSaturate = saturateGreen(purpleImage);
+    const imgFromMap = mapToGreen(purpleImage);
+
+    assert(imgFromSaturate.width === imgFromMap.width);
+    assert(imgFromSaturate.height === imgFromMap.height);
+  });
+
+  it("should create an image with the same result as saturateGreen", () => {
+    const purpleImage = Image.create(10, 10, [160, 32, 240]);
+    const imgFromSaturate = saturateGreen(purpleImage);
+    const imgFromMap = mapToGreen(purpleImage);
+
+    for (let i = 0; i < imgFromMap.width; ++i) {
+      for (let j = 0; j < imgFromMap.height; ++j) {
+        const mapColors = imgFromMap.getPixel(i, j);
+        const saturateColors = imgFromSaturate.getPixel(i, j);
+
+        assert(mapColors[0] === saturateColors[0]);
+        assert(mapColors[1] === saturateColors[1]);
+        assert(mapColors[2] === saturateColors[2]);
+      }
+    }
+  });
 });
 
 describe("mapFlipColors", () => {
