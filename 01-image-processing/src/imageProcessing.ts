@@ -1,4 +1,4 @@
-import { COLORS, Color, Image } from "../include/image.js";
+import type { Color, Image } from "../include/image.js";
 
 /**
  * Saturates green color in each pixel of an image
@@ -7,19 +7,7 @@ import { COLORS, Color, Image } from "../include/image.js";
  */
 export function saturateGreen(img: Image): Image {
   // TODO
-  const copy = img.copy();
-
-  // double for loop that traverses through the width and height
-  // saturates the green color of the pixel if not saturated
-  for (let i = 0; i < copy.width; ++i) {
-    for (let j = 0; j < copy.height; ++j) {
-      const curColor = copy.getPixel(i, j);
-      if (curColor[1] !== COLORS.GREEN[1]) {
-        copy.setPixel(i, j, [curColor[0], COLORS.GREEN[1], curColor[2]]);
-      }
-    }
-  }
-  return copy;
+  return img.copy();
 }
 
 /**
@@ -30,19 +18,7 @@ export function saturateGreen(img: Image): Image {
  */
 export function flipColors(img: Image): Image {
   // TODO
-  const copy = img.copy();
-
-  for (let i = 0; i < copy.width; ++i) {
-    for (let j = 0; j < copy.height; ++j) {
-      const ogColors = img.getPixel(i, j);
-      const newFirst = Math.floor((ogColors[1] + ogColors[2]) / 2);
-      const newSecond = Math.floor((ogColors[0] + ogColors[2]) / 2);
-      const newThird = Math.floor((ogColors[0] + ogColors[1]) / 2);
-
-      copy.setPixel(i, j, [newFirst, newSecond, newThird]);
-    }
-  }
-  return copy;
+  return img.copy();
 }
 
 /**
@@ -56,11 +32,7 @@ export function flipColors(img: Image): Image {
  */
 export function mapLine(img: Image, lineNo: number, func: (c: Color) => Color): void {
   // TODO
-  if (lineNo >= 0 && lineNo < img.height) {
-    for (let i = 0; i < img.width; ++i) {
-      img.setPixel(i, lineNo, func(img.getPixel(i, lineNo)));
-    }
-  }
+  return;
 }
 
 /**
@@ -72,13 +44,7 @@ export function mapLine(img: Image, lineNo: number, func: (c: Color) => Color): 
  */
 export function imageMap(img: Image, func: (c: Color) => Color): Image {
   // TODO
-  const copy = img.copy();
-
-  for (let i = 0; i < img.height; ++i) {
-    mapLine(copy, i, func);
-  }
-
-  return copy;
+  return img.copy();
 }
 
 /**
@@ -88,8 +54,7 @@ export function imageMap(img: Image, func: (c: Color) => Color): Image {
  */
 export function mapToGreen(img: Image): Image {
   // TODO
-  const newImage = imageMap(img, color => [color[0], 255, color[2]]);
-  return newImage;
+  return img.copy();
 }
 
 /**
@@ -100,11 +65,5 @@ export function mapToGreen(img: Image): Image {
  */
 export function mapFlipColors(img: Image): Image {
   // TODO
-  const newImage = imageMap(img, color => [
-    Math.floor((color[1] + color[2]) / 2),
-    Math.floor((color[0] + color[2]) / 2),
-    Math.floor((color[0] + color[1]) / 2),
-  ]);
-
-  return newImage;
+  return img.copy();
 }
