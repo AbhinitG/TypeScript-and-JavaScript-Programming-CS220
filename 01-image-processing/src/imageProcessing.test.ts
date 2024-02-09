@@ -34,6 +34,21 @@ describe("saturateGreen", () => {
   });
 
   // More tests for saturateGreen go here.
+  it("should maximize green for every pixel but not change the others", () => {
+    const blackImage = Image.create(10, 15, COLORS.BLACK);
+    const gbImage = saturateGreen(blackImage);
+
+    for (let i = 0; i < gbImage.width; ++i) {
+      for (let j = 0; j < gbImage.height; ++j) {
+        const newP = gbImage.getPixel(i, j);
+        const ogP = blackImage.getPixel(i, j);
+
+        assert(newP[0] === ogP[0], "The red channel should not have changed.")
+        assert(newP[1] === 255, "The green channel should be saturated.")
+        assert(newP[2] === ogP[2], "The blue channel should not have changed.")
+      }
+    }
+  });
 });
 
 describe("flipColors", () => {

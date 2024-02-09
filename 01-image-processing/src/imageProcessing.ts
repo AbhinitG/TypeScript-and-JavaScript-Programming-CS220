@@ -1,4 +1,4 @@
-import type { Color, Image } from "../include/image.js";
+import { COLORS, Color, Image } from "../include/image.js";
 
 /**
  * Saturates green color in each pixel of an image
@@ -7,7 +7,18 @@ import type { Color, Image } from "../include/image.js";
  */
 export function saturateGreen(img: Image): Image {
   // TODO
-  return img.copy();
+  const newImg = img.copy();
+
+  for (let i = 0; i < newImg.width; ++i) {
+    for (let j = 0; j < newImg.height; ++j) {
+      const curColor = newImg.getPixel(i, j);
+      
+      if (curColor[1] !== COLORS.GREEN[1]) {
+        newImg.setPixel(i, j, [curColor[0], COLORS.GREEN[1], curColor[2]]);
+      }
+    }
+  }
+  return newImg;
 }
 
 /**
