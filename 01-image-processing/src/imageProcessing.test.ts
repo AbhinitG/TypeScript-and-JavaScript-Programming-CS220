@@ -1,6 +1,6 @@
 import assert from "assert";
 import { COLORS, Image } from "../include/image.js";
-import { flipColors, saturateGreen } from "./imageProcessing.js";
+import { mapFlipColors, mapToGreen, imageMap, mapLine, flipColors, saturateGreen } from "./imageProcessing.js";
 
 describe("saturateGreen", () => {
   it("should maximize green in the upper left corner", () => {
@@ -84,6 +84,32 @@ describe("flipColors", () => {
 
 describe("mapLine", () => {
   // Tests for mapLine go here.
+  it("should not modify the image if lineNo is not valid", () => {
+    const purpleImage = Image.create(10, 10, [160, 32, 240]);
+    const copy = purpleImage.copy();
+
+    mapLine(copy, 12, color => [color[0], 255, color[1]]);
+
+    for (let i = 0; i < copy.width; ++i) {
+      for (let j = 0; j < copy.height; ++j) {
+        const copyColor = copy.getPixel(i, j);
+        const ogColor = copy.getPixel(i, j);
+        assert(copyColor[0] === ogColor[0]);
+        assert(copyColor[1] === ogColor[1]);
+        assert(copyColor[2] === ogColor[2]);
+      }
+    }
+  });
+
+  it("should modify the image with func at lineNo when lineNo is valid", () => {
+    const purpleImage = Image.create(10, 10, [160, 32, 240]);
+    mapLine(purpleImage, 4, color => [color[0], 255, color[2]]);
+
+    // the green color should be saturated for all pixels at height 4
+    for (let i = 0; i < purpleImage.width; ++i) {
+      assert(purpleImage.getPixel(i, 4)[1] === 255);
+    }
+  });
 });
 
 describe("imageMap", () => {

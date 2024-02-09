@@ -55,7 +55,11 @@ export function flipColors(img: Image): Image {
  */
 export function mapLine(img: Image, lineNo: number, func: (c: Color) => Color): void {
   // TODO
-  return;
+  if (lineNo >= 0 && lineNo < img.height) {
+    for (let i = 0; i < img.width; ++i) {
+      img.setPixel(i, lineNo, func(img.getPixel(i, lineNo)));
+    }
+  }
 }
 
 /**
