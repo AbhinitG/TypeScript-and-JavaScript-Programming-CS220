@@ -51,16 +51,29 @@ export function mapWindow(
 
 export function isGrayish(p: Color): boolean {
   // TODO
-  return (Math.max(p[0], p[1], p[2]) - Math.min(p[0], p[1], p[2])) <= 85;
+  return Math.max(p[0], p[1], p[2]) - Math.min(p[0], p[1], p[2]) <= 85;
 }
 
 export function makeGrayish(img: Image): Image {
   // TODO
-  return img.copy();
+  const cond = (img: Image, x: number, y: number): boolean => !isGrayish(img.getPixel(x, y));
+  return imageMapIf(
+    img,
+    cond,
+    (p: Color): Color => [
+      Math.floor((p[0] + p[1] + p[2]) / 3),
+      Math.floor((p[0] + p[1] + p[2]) / 3),
+      Math.floor((p[0] + p[1] + p[2]) / 3),
+    ]
+  );
 }
 
 export function pixelBlur(img: Image, x: number, y: number): Color {
   // TODO
+  // First get all the neighbors and store in a 2d array
+  // Second use map to get the set of Color values for each set of coordinates
+  // Third use reduce to get the mean of the Color values
+
   return [0, 0, 0];
 }
 

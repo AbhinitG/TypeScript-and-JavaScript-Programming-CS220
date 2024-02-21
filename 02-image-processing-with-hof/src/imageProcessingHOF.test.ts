@@ -1,6 +1,6 @@
 import assert from "assert";
 import { Color, COLORS, Image } from "../include/image.js";
-import { isGrayish, mapWindow, imageMapIf, imageMapCoord } from "./imageProcessingHOF.js";
+import { imageBlur, pixelBlur, makeGrayish, isGrayish, mapWindow, imageMapIf, imageMapCoord } from "./imageProcessingHOF.js";
 
 // Helper function to check if a color is equal to another one with an error of 1 (default)
 function expectColorToBeCloseTo(actual: Color, expected: Color, error = 1) {
@@ -143,6 +143,53 @@ describe("isGrayish", () => {
 
 describe("makeGrayish", () => {
   // More tests for makeGrayish go here
+  it("should return a different image with the same dimensions", () => {
+    const input = Image.create(10, 10, COLORS.WHITE);
+    const output = makeGrayish(input);
+
+    assert(input !== output);
+    assert(input.width === output.width);
+    assert(input.height === output.height);
+  });
+
+  it("should not change the color of the pixels in the image if isGrayish is true", () => {
+    const p: Color = [0, 29, 150];
+    const input = Image.create(10, 10, p);
+    const output = makeGrayish(input);
+
+    for (let i = 0; i < output.width; ++i) {
+      for (let j = 0; j < output.height; ++j) {
+        const oldC = input.getPixel(i, j);
+        const newC = output.getPixel(i, j);
+
+        if (isGrayish(oldC)) {
+          assert(newC[0] === oldC[0]);
+          assert(newC[1] === oldC[1]);
+          assert(newC[2] === oldC[2]);
+        }
+      }
+    }
+  });
+
+  it("should change the color of the pixels to the average of the rgb if isGrayish is false", () => {
+    const p: Color = [30, 29, 100];
+    const input = Image.create(10, 10, p);
+    const output = makeGrayish(input);
+
+    for (let i = 0; i < output.width; ++i) {
+      for (let j = 0; j < output.height; ++j) {
+        const oldC = input.getPixel(i, j);
+        const newC = output.getPixel(i, j);
+
+        if (!isGrayish(oldC)) {
+
+          assert(newC[0] === Math.floor((oldC[0] + oldC[1] + oldC[2]) / 3));
+          assert(newC[1] === Math.floor((oldC[0] + oldC[1] + oldC[2]) / 3));
+          assert(newC[2] === Math.floor((oldC[0] + oldC[1] + oldC[2]) / 3));
+        }
+      }
+    }
+  });
 });
 
 describe("pixelBlur", () => {
