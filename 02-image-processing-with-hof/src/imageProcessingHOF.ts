@@ -35,7 +35,18 @@ export function mapWindow(
   func: (p: Color) => Color
 ): Image {
   // TODO
-  return img.copy();
+  if (
+    xInterval.length !== 2 &&
+    yInterval.length !== 2 &&
+    xInterval[0] <= xInterval[1] &&
+    yInterval[0] <= yInterval[1]
+  ) {
+    return img.copy();
+  }
+  const cond = (img: Image, x: number, y: number): boolean => {
+    return x >= xInterval[0] && x <= xInterval[1] && y >= yInterval[0] && y <= yInterval[1];
+  };
+  return imageMapIf(img, cond, func);
 }
 
 export function isGrayish(p: Color): boolean {

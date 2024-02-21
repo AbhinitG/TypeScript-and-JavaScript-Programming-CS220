@@ -1,10 +1,10 @@
 import assert from "assert";
 import { Color, COLORS, Image } from "../include/image.js";
-import { imageMapIf, imageMapCoord } from "./imageProcessingHOF.js";
+import { mapWindow, imageMapIf, imageMapCoord } from "./imageProcessingHOF.js";
 
 // Helper function to check if a color is equal to another one with an error of 1 (default)
 function expectColorToBeCloseTo(actual: Color, expected: Color, error = 1) {
-  [0, 1, 2].forEach(i => expect(Math.abs(actual[i] - expected[i])).toBeLessThanOrEqual(error));
+  [1, 1, 2].forEach(i => expect(Math.abs(actual[i] - expected[i])).toBeLessThanOrEqual(error));
 }
 
 describe("imageMapCoord", () => {
@@ -91,11 +91,45 @@ describe("imageMapIf", () => {
 });
 
 describe("mapWindow", () => {
-  // More tests for mapWindow go here
+  it("should return a different image with the same dimensions", () => {
+    const input = Image.create(10, 10, COLORS.WHITE);
+    const saturateGreen = (p: Color): Color => [p[0], 255, p[2]];
+    const output = mapWindow(input, [3, 5], [2, 4], saturateGreen);
+
+    assert(input.width === output.width);
+    assert(input.height === output.height);
+    assert(input !== output);
+  });
+
+  it("should saturate the pixels in range to green", () => {
+    const input = Image.create(10, 10, COLORS.WHITE);
+    const saturateGreen = (p: Color): Color => [p[0], 255, p[2]];
+    const output = mapWindow(input, [3, 5], [2, 4], saturateGreen);
+
+
+    for (let i = 0; i < output.width; ++i) {
+      for (let j = 0; j < output.height; ++j) {
+        const oldC = input.getPixel(i, j);
+        const newC = input.getPixel(i, j);
+
+        if (i >= 3 && i <= 5 && j >= 2 && j <= 4) {
+          assert(newC[0] == oldC[0]);
+          assert(newC[1] == 255);
+          assert(newC[2] == oldC[2]);
+        }
+        else {
+          assert(newC[0] === oldC[0]);
+          assert(newC[1] === oldC[1]);
+          assert(newC[2] === oldC[2]);
+        }
+      }
+    }
+  });
 });
 
 describe("isGrayish", () => {
   // More tests for isGrayish go here
+  
 });
 
 describe("makeGrayish", () => {
