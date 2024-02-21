@@ -1,6 +1,6 @@
 import assert from "assert";
 import { Color, COLORS, Image } from "../include/image.js";
-import { mapWindow, imageMapIf, imageMapCoord } from "./imageProcessingHOF.js";
+import { isGrayish, mapWindow, imageMapIf, imageMapCoord } from "./imageProcessingHOF.js";
 
 // Helper function to check if a color is equal to another one with an error of 1 (default)
 function expectColorToBeCloseTo(actual: Color, expected: Color, error = 1) {
@@ -45,8 +45,7 @@ describe("imageMapCoord", () => {
           assert(newC[0] === oldC[0]);
           assert(newC[1] === 0);
           assert(newC[2] === 0);
-        }
-        else {
+        } else {
           assert(newC[0] === oldC[0]);
           assert(newC[1] === oldC[1]);
           assert(newC[2] == newC[2]);
@@ -60,7 +59,11 @@ describe("imageMapIf", () => {
   // More tests for imageMapIf go here
   it("should return a different image with the same dimensions", () => {
     const input = Image.create(10, 10, COLORS.WHITE);
-    const output = imageMapIf(input, (img: Image, x: number, y: number) => img.getPixel(x, y)[1] === 255, (p: Color): Color => [p[0], 255, p[2]]);
+    const output = imageMapIf(
+      input,
+      (img: Image, x: number, y: number) => img.getPixel(x, y)[1] === 255,
+      (p: Color): Color => [p[0], 255, p[2]]
+    );
     assert(input.width === output.width);
     assert(input.height === output.height);
     assert(input !== output);
@@ -106,7 +109,6 @@ describe("mapWindow", () => {
     const saturateGreen = (p: Color): Color => [p[0], 255, p[2]];
     const output = mapWindow(input, [3, 5], [2, 4], saturateGreen);
 
-
     for (let i = 0; i < output.width; ++i) {
       for (let j = 0; j < output.height; ++j) {
         const oldC = input.getPixel(i, j);
@@ -116,8 +118,7 @@ describe("mapWindow", () => {
           assert(newC[0] == oldC[0]);
           assert(newC[1] == 255);
           assert(newC[2] == oldC[2]);
-        }
-        else {
+        } else {
           assert(newC[0] === oldC[0]);
           assert(newC[1] === oldC[1]);
           assert(newC[2] === oldC[2]);
@@ -129,7 +130,15 @@ describe("mapWindow", () => {
 
 describe("isGrayish", () => {
   // More tests for isGrayish go here
-  
+  it("should return false if the difference between the max and min is greater than 85", () => {
+    const p: Color = [0, 29, 150];
+    assert(!isGrayish(p));
+  });
+
+  it("should return true if the difference between the max and min is at most 85", () => {
+    const p: Color = [30, 29, 100];
+    assert(isGrayish(p));
+  });
 });
 
 describe("makeGrayish", () => {

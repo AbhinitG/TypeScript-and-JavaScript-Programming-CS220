@@ -51,7 +51,7 @@ export function mapWindow(
 
 export function isGrayish(p: Color): boolean {
   // TODO
-  return true;
+  return (Math.max(p[0], p[1], p[2]) - Math.min(p[0], p[1], p[2])) <= 85;
 }
 
 export function makeGrayish(img: Image): Image {
