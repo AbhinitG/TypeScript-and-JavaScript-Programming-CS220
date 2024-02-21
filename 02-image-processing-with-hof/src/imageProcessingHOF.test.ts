@@ -1,6 +1,6 @@
 import assert from "assert";
 import { Color, COLORS, Image } from "../include/image.js";
-import { imageMapCoord } from "./imageProcessingHOF.js";
+import { imageMapIf, imageMapCoord } from "./imageProcessingHOF.js";
 
 // Helper function to check if a color is equal to another one with an error of 1 (default)
 function expectColorToBeCloseTo(actual: Color, expected: Color, error = 1) {
@@ -58,7 +58,36 @@ describe("imageMapCoord", () => {
 
 describe("imageMapIf", () => {
   // More tests for imageMapIf go here
-  
+  it("should return a different image with the same dimensions", () => {
+    const input = Image.create(10, 10, COLORS.WHITE);
+    const output = imageMapIf(input, (img: Image, x: number, y: number) => img.getPixel(x, y)[1] === 255, (p: Color): Color => [p[0], 255, p[2]]);
+    assert(input.width === output.width);
+    assert(input.height === output.height);
+    assert(input !== output);
+  });
+
+  it("should saturate the green if the green hasn't been saturated but not change the other colors", () => {
+    const input = Image.create(10, 10, COLORS.WHITE);
+    const output = imageMapIf(
+      input,
+      (img: Image, x: number, y: number) => img.getPixel(x, y)[1] === 255,
+      (p: Color): Color => [p[0], 255, p[2]]
+    );
+
+    for (let i = 0; i < output.width; ++i) {
+      for (let j = 0; j < output.height; ++j) {
+        const oldC = input.getPixel(i, j);
+        const newC = input.getPixel(i, j);
+
+        if (oldC[1] !== 255) {
+          assert(newC[1] == 255);
+          assert(newC[1] !== oldC[1]);
+        }
+        assert(newC[0] === oldC[0]);
+        assert(newC[2] === oldC[2]);
+      }
+    }
+  });
 });
 
 describe("mapWindow", () => {

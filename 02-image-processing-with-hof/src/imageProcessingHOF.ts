@@ -17,7 +17,15 @@ export function imageMapIf(
   func: (p: Color) => Color
 ): Image {
   // TODO
-  return img.copy();
+  const newImg = img.copy();
+  for (let i = 0; i < newImg.width; ++i) {
+    for (let j = 0; j < newImg.height; ++j) {
+      if (cond(newImg, i, j) === true) {
+        newImg.setPixel(i, j, func(newImg.getPixel(i, j)));
+      }
+    }
+  }
+  return newImg;
 }
 
 export function mapWindow(
