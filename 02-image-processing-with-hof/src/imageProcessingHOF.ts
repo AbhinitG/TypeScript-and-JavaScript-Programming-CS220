@@ -5,7 +5,7 @@ export function imageMapCoord(img: Image, func: (img: Image, x: number, y: numbe
   const newImg = img.copy();
   for (let i = 0; i < newImg.width; ++i) {
     for (let j = 0; j < newImg.height; ++j) {
-      newImg.setPixel(i, j, func(newImg, i, j));
+      newImg.setPixel(i, j, func(img, i, j));
     }
   }
   return newImg;
@@ -21,7 +21,7 @@ export function imageMapIf(
   for (let i = 0; i < newImg.width; ++i) {
     for (let j = 0; j < newImg.height; ++j) {
       if (cond(newImg, i, j) === true) {
-        newImg.setPixel(i, j, func(newImg.getPixel(i, j)));
+        newImg.setPixel(i, j, func(img.getPixel(i, j)));
       }
     }
   }
@@ -73,11 +73,40 @@ export function pixelBlur(img: Image, x: number, y: number): Color {
   // First get all the neighbors and store in a 2d array
   // Second use map to get the set of Color values for each set of coordinates
   // Third use reduce to get the mean of the Color values
+  let result: Color = [0, 0, 0];
+  if (Number.isInteger(x) && Number.isInteger(y)) {
+    const neighbors = [
+      [x, y],
+      [x + 1, y],
+      [x - 1, y],
+      [x, y + 1],
+      [x, y - 1],
+      [x + 1, y + 1],
+      [x + 1, y - 1],
+      [x - 1, y - 1],
+      [x - 1, y + 1],
+    ];
 
-  return [0, 0, 0];
+    const nInRange = neighbors.filter(e => e[0] >= 0 && e[0] < img.width && e[1] >= 0 && e[1] < img.height);
+
+    result = nInRange.reduce(
+      (acc: Color, e: number[]) => {
+        const p: Color = img.getPixel(e[0], e[1]);
+        return (acc = [acc[0] + p[0], acc[1] + p[1], acc[2] + p[2]]);
+      },
+      [0, 0, 0]
+    );
+
+    result = [
+      Math.floor(result[0] / nInRange.length),
+      Math.floor(result[1] / nInRange.length),
+      Math.floor(result[2] / nInRange.length),
+    ];
+  }
+  return result;
 }
 
 export function imageBlur(img: Image): Image {
   // TODO
-  return img.copy();
+  return imageMapCoord(img, pixelBlur);
 }

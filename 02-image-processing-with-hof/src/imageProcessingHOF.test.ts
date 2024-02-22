@@ -1,6 +1,14 @@
 import assert from "assert";
 import { Color, COLORS, Image } from "../include/image.js";
-import { imageBlur, pixelBlur, makeGrayish, isGrayish, mapWindow, imageMapIf, imageMapCoord } from "./imageProcessingHOF.js";
+import {
+  imageBlur,
+  pixelBlur,
+  makeGrayish,
+  isGrayish,
+  mapWindow,
+  imageMapIf,
+  imageMapCoord,
+} from "./imageProcessingHOF.js";
 
 // Helper function to check if a color is equal to another one with an error of 1 (default)
 function expectColorToBeCloseTo(actual: Color, expected: Color, error = 1) {
@@ -61,7 +69,7 @@ describe("imageMapIf", () => {
     const input = Image.create(10, 10, COLORS.WHITE);
     const output = imageMapIf(
       input,
-      (img: Image, x: number, y: number) => img.getPixel(x, y)[1] === 255,
+      (img: Image, x: number, y: number) => img.getPixel(x, y)[1] !== 255,
       (p: Color): Color => [p[0], 255, p[2]]
     );
     assert(input.width === output.width);
@@ -70,10 +78,10 @@ describe("imageMapIf", () => {
   });
 
   it("should saturate the green if the green hasn't been saturated but not change the other colors", () => {
-    const input = Image.create(10, 10, COLORS.WHITE);
+    const input = Image.create(10, 10, COLORS.RED);
     const output = imageMapIf(
       input,
-      (img: Image, x: number, y: number) => img.getPixel(x, y)[1] === 255,
+      (img: Image, x: number, y: number) => img.getPixel(x, y)[1] !== 255,
       (p: Color): Color => [p[0], 255, p[2]]
     );
 
@@ -83,11 +91,14 @@ describe("imageMapIf", () => {
         const newC = input.getPixel(i, j);
 
         if (oldC[1] !== 255) {
-          assert(newC[1] == 255);
-          assert(newC[1] !== oldC[1]);
+          assert(newC[0] === oldC[0]);
+          assert(newC[1] !== 255);
+          assert(newC[2] === oldC[2]);
+        } else {
+          assert(newC[0] === oldC[0]);
+          assert(newC[1] === oldC[1]);
+          assert(newC[2] === oldC[2]);
         }
-        assert(newC[0] === oldC[0]);
-        assert(newC[2] === oldC[2]);
       }
     }
   });
@@ -182,7 +193,6 @@ describe("makeGrayish", () => {
         const newC = output.getPixel(i, j);
 
         if (!isGrayish(oldC)) {
-
           assert(newC[0] === Math.floor((oldC[0] + oldC[1] + oldC[2]) / 3));
           assert(newC[1] === Math.floor((oldC[0] + oldC[1] + oldC[2]) / 3));
           assert(newC[2] === Math.floor((oldC[0] + oldC[1] + oldC[2]) / 3));
@@ -194,8 +204,100 @@ describe("makeGrayish", () => {
 
 describe("pixelBlur", () => {
   // Tests for pixelBlur go here
+  it("should return a pixel with all rgb values of zero if x and y are not integers", () => {
+    const p: Color = [0, 29, 150];
+    const input = Image.create(10, 10, p);
+    const output = pixelBlur(input, 13.1, 1.5);
+
+    assert(output[0] === 0);
+    assert(output[1] === 0);
+    assert(output[2] === 0);
+  });
+
+  it("should return a color with the truncated mean of itself and its neighbors", () => {
+    const input = Image.loadImageFromGallery("bike");
+    const x = Math.floor(input.width / 2);
+    const y = Math.floor(input.height / 2);
+    const output = pixelBlur(input, x, y);
+    let expected: Color = [0, 0, 0];
+
+    const neighbors = [
+      [x, y],
+      [x + 1, y],
+      [x - 1, y],
+      [x, y + 1],
+      [x, y - 1],
+      [x + 1, y + 1],
+      [x + 1, y - 1],
+      [x - 1, y - 1],
+      [x - 1, y + 1],
+    ];
+
+    for (let i = 0; i < neighbors.length; ++i) {
+      const c = input.getPixel(neighbors[i][0], neighbors[i][1]);
+      expected = [expected[0] + c[0], expected[1] + c[1], expected[2] + c[2]];
+    }
+
+    expected = [
+      Math.floor(expected[0] / neighbors.length),
+      Math.floor(expected[1] / neighbors.length),
+      Math.floor(expected[2] / neighbors.length),
+    ];
+
+    assert(output[0] === expected[0]);
+    assert(output[1] === expected[1]);
+    assert(output[2] === expected[2]);
+  });
 });
 
 describe("imageBlur", () => {
   // Tests for imageBlur go here
+  it("should return a different image with the same dimensions", () => {
+    const input = Image.loadImageFromGallery("bike");
+    const output = imageBlur(input);
+
+    assert(input !== output);
+    assert(input.width === output.width);
+    assert(input.height === output.height);
+  });
+
+  it("should apply pixelBlur to every pixel in the image", () => {
+    const input = Image.loadImageFromGallery("bike");
+    const output = imageBlur(input);
+
+    for (let i = 0; i < output.width; ++i) {
+      for (let j = 0; j < output.height; ++j) {
+        const newC = output.getPixel(i, j);
+        let expected: Color = [0, 0, 0];
+        const neighbors = [
+          [i, j],
+          [i + 1, j],
+          [i - 1, j],
+          [i, j + 1],
+          [i, j - 1],
+          [i + 1, j + 1],
+          [i + 1, j - 1],
+          [i - 1, j - 1],
+          [i - 1, j + 1],
+        ];
+
+        const filtered = neighbors.filter(e => e[0] >= 0 && e[0] < output.width && e[1] >= 0 && e[1] < output.height);
+
+        for (let i = 0; i < filtered.length; ++i) {
+          const c = input.getPixel(filtered[i][0], filtered[i][1]);
+          expected = [expected[0] + c[0], expected[1] + c[1], expected[2] + c[2]];
+        }
+
+        expected = [
+          Math.floor(expected[0] / filtered.length),
+          Math.floor(expected[1] / filtered.length),
+          Math.floor(expected[2] / filtered.length),
+        ];
+
+        assert(newC[0] === expected[0]);
+        assert(newC[1] === expected[1]);
+        assert(newC[2] === expected[2]);
+      }
+    }
+  });
 });
