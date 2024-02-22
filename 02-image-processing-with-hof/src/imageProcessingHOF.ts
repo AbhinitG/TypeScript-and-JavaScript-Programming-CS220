@@ -20,7 +20,7 @@ export function imageMapIf(
   const newImg = img.copy();
   for (let i = 0; i < newImg.width; ++i) {
     for (let j = 0; j < newImg.height; ++j) {
-      if (cond(newImg, i, j) === true) {
+      if (cond(newImg, i, j)) {
         newImg.setPixel(i, j, func(img.getPixel(i, j)));
       }
     }
@@ -74,7 +74,7 @@ export function pixelBlur(img: Image, x: number, y: number): Color {
   // Second use map to get the set of Color values for each set of coordinates
   // Third use reduce to get the mean of the Color values
   let result: Color = [0, 0, 0];
-  if (Number.isInteger(x) && Number.isInteger(y)) {
+  if (Number.isInteger(x) && Number.isInteger(y) && x >= 0 && y >= 0) {
     const neighbors = [
       [x, y],
       [x + 1, y],

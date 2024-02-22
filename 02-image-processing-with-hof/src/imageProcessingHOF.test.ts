@@ -11,9 +11,9 @@ import {
 } from "./imageProcessingHOF.js";
 
 // Helper function to check if a color is equal to another one with an error of 1 (default)
-function expectColorToBeCloseTo(actual: Color, expected: Color, error = 1) {
-  [1, 1, 2].forEach(i => expect(Math.abs(actual[i] - expected[i])).toBeLessThanOrEqual(error));
-}
+// function expectColorToBeCloseTo(actual: Color, expected: Color, error = 1) {
+//   [1, 1, 2].forEach(i => expect(Math.abs(actual[i] - expected[i])).toBeLessThanOrEqual(error));
+// }
 
 describe("imageMapCoord", () => {
   function identity(img: Image, x: number, y: number) {
@@ -208,6 +208,16 @@ describe("pixelBlur", () => {
     const p: Color = [0, 29, 150];
     const input = Image.create(10, 10, p);
     const output = pixelBlur(input, 13.1, 1.5);
+
+    assert(output[0] === 0);
+    assert(output[1] === 0);
+    assert(output[2] === 0);
+  });
+
+  it("should return a pixel with all rgb values of zero if x and y are negative", () => {
+    const p: Color = [0, 29, 150];
+    const input = Image.create(10, 10, p);
+    const output = pixelBlur(input, -5, -7);
 
     assert(output[0] === 0);
     assert(output[1] === 0);
