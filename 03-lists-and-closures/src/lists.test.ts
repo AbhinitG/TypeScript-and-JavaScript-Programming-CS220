@@ -212,6 +212,33 @@ describe("nonNegativeProducts", () => {
 
 describe("negativeProducts", () => {
   // Tests for nonNegativeProducts go here
+  it("should return an empty list if the list passed in contains only positive numbers", () => {
+    const arr = [1, 2, 3, 4, 5];
+    const lst = arrayToList(arr);
+    const newlst = negativeProducts(lst);
+
+    assert(newlst.isEmpty());
+  });
+
+  it("should return a list with only negative numbers if there are no instance of consecutive nonnegative numbers", () => {
+    const arr = [-1, 1, -2, 2, -3, 3, -4, 4];
+    const lst = arrayToList(arr);
+    const newlst = negativeProducts(lst);
+    const newArr = listToArray(newlst);
+    const expected = [-1, -2, -3, -4];
+
+    expect(newArr).toEqual(expected);
+  });
+
+  it("should return a list with a product if there are consecutive nonnegative numbers", () => {
+    const arr = [-3, -6, 2, -2, -1, -2];
+    const lst = arrayToList(arr);
+    const newlst = negativeProducts(lst);
+    const newArr = listToArray(newlst);
+    const expected = [-3, 18, -2, 2, -4];
+
+    expect(newArr).toEqual(expected);
+  });
 });
 
 describe("squashList", () => {
