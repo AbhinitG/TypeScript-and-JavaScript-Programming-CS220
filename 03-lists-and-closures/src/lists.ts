@@ -51,20 +51,24 @@ export function everyNCond<T>(lst: List<T>, n: number, cond: (e: T) => boolean):
   return lst.filter((e: T) => ++i % n === 0 && cond(e));
 }
 
-export function nonNegativeProducts(lst: List<number>): List<number> {
-  // TODO: Implement this function
+export function productsHelper(lst: List<number>, cond : (n: number) => boolean): List<number> {
   let prev = 1;
   const newlst = lst.reduce((acc: List<number>, e: number) => {
-    acc = (e >= 0) ? node(e * prev, acc) : acc;
-    prev = (e < 0) ? 1 : e * prev;
+    acc = cond(e) ? node(e * prev, acc) : acc;
+    prev = cond(e) ? e * prev : 1;
     return acc;
   }, empty<number>());
   return reverseList(newlst);
 }
 
+export function nonNegativeProducts(lst: List<number>): List<number> {
+  // TODO: Implement this function
+  return productsHelper(lst, (n: number): boolean => n >= 0);
+}
+
 export function negativeProducts(lst: List<number>): List<number> {
   // TODO: Implement this function
-  return lst;
+  return productsHelper(lst, (n: number): boolean => n < 0);
 }
 
 export function squashList(lst: List<number | List<number>>): List<number> {
