@@ -71,9 +71,13 @@ export function negativeProducts(lst: List<number>): List<number> {
   return productsHelper(lst, (n: number): boolean => n < 0);
 }
 
+export function listSum(lst: List<number>): number {
+  return lst.isEmpty() ? 0 : lst.head() + listSum(lst.tail());
+}
+
 export function squashList(lst: List<number | List<number>>): List<number> {
   // TODO: Implement this function
-  return node(1, node(2, empty()));
+  return lst.map(e => (typeof e === "number") ? e : listSum(e));
 }
 
 export function composeList<T>(lst: List<(n: T) => T>): (n: T) => T {
