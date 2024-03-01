@@ -243,6 +243,15 @@ describe("negativeProducts", () => {
 
 describe("squashList", () => {
   // Tests for squashList go here
+  it("should return a list where the list elements are replaced by the sum of their elements", () => {
+    const arr = [1, 2, arrayToList([2, 3, 7]), 4, arrayToList([1, 10, 13])];
+    const lst = arrayToList(arr);
+    const newlst: List<number> = squashList(lst);
+    const newArr = listToArray(newlst);
+    const expected = [1, 2, 12, 4, 24];
+
+    expect(newArr).toEqual(expected);
+  });
 });
 
 describe("composeList", () => {
