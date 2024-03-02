@@ -51,7 +51,7 @@ export function everyNCond<T>(lst: List<T>, n: number, cond: (e: T) => boolean):
   return lst.filter((e: T) => ++i % n === 0 && cond(e));
 }
 
-export function productsHelper(lst: List<number>, cond : (n: number) => boolean): List<number> {
+export function productsHelper(lst: List<number>, cond: (n: number) => boolean): List<number> {
   let prev = 1;
   const newlst = lst.reduce((acc: List<number>, e: number) => {
     acc = cond(e) ? node(e * prev, acc) : acc;
@@ -77,15 +77,15 @@ export function listSum(lst: List<number>): number {
 
 export function squashList(lst: List<number | List<number>>): List<number> {
   // TODO: Implement this function
-  return lst.map(e => (typeof e === "number") ? e : listSum(e));
+  return lst.map(e => (typeof e === "number" ? e : listSum(e)));
 }
 
 export function composeList<T>(lst: List<(n: T) => T>): (n: T) => T {
   // TODO: Implement this function
-  return (n: T) => n;
+  return (n: T): T => lst.reduce((acc, f) => f(acc), n);
 }
 
 export function composeFunctions<T, U>(funcArr: ((arg1: T, arg2: U) => T)[]): (a: U) => (x: T) => T {
   // TODO: Implement this function
-  return (a: U) => (x: T) => x;
+  return (a: U) => (x: T) => funcArr.reduce((acc, f) => f(acc, a), x);
 }

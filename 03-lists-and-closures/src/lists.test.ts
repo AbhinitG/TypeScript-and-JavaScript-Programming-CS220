@@ -256,4 +256,38 @@ describe("squashList", () => {
 
 describe("composeList", () => {
   // Tests for composeList go here
+  it("should return a function that doesn't modify the value when the list passed in is empty", () => {
+    const lst = arrayToList([]);
+    const newFunc = composeList(lst);
+
+    assert(newFunc(7) === 7);
+  });
+
+  it("should return a function that returns the same value as successfully applying all the functions in the list", () => {
+    const func1 = (n: number): number => n + 1;
+    const func2 = (n: number): number => n + 2;
+    const func3 = (n: number): number => n + 3;
+    const lst = arrayToList([func1, func2, func3]);
+    const newFunc = composeList(lst);
+    const expected = func3(func2(func1(0)));
+
+    assert(newFunc(0) === expected);
+  });
+});
+
+describe("composeFunctions", () => {
+  // Tests for composeList go here
+  it("should return a function that returns the same value as successfully applying all the functions in the list along with the closure", () => {
+    const num = 2;
+    const func1 = (n: number, m: number): number => m * (n + 1);
+    const func2 = (n: number, m: number): number => m * (n + 2);
+    const func3 = (n: number, m: number): number => m * (n + 3);
+    const arr = [func1, func2, func3];
+    const newFunc = composeFunctions(arr);
+    const newFunc2 = newFunc(num);
+    const newVal = newFunc2(0);
+    const expected = func3(func2(func1(0, 2), 2), 2);
+
+    assert(newVal === expected);
+  });
 });
