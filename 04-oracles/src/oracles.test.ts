@@ -5,7 +5,7 @@ import {
   STABLE_MATCHING_SOLUTION_1,
   STABLE_MATCHING_SOLUTION_1_TRACE,
 } from "../include/stableMatching.js";
-import { generateInput, stableMatchingOracle, stableMatchingRunOracle } from "./oracles.js";
+import { stableMatchingOracle, stableMatchingRunOracle } from "./oracles.js";
 
 describe("generateInput", () => {
   // Tests for generateInput go here.
