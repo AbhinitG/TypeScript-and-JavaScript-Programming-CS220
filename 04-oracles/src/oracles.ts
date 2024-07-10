@@ -1,6 +1,6 @@
 import assert from "assert";
 
-import type { Hire, StableMatcher, StableMatcherWithTrace } from "../include/stableMatching.js";
+import type { Offer, Hire, StableMatcher, StableMatcherWithTrace } from "../include/stableMatching.js";
 
 function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -94,6 +94,70 @@ function checkStableMatching(companies: number[][], candidates: number[][], hire
  * @throws An `AssertionError` if `makeStableMatchingTrace` does not follow the specified algorithm, or its steps (trace)
  * do not match with the result (out).
  */
+
+function checkValidTrace(companies: number[][], candidates: number[][], offers: Offer[], hires: Hire[]): boolean {
+  const compMatched: number[] = new Array<number>(companies.length).fill(-1);
+  const candMatched: number[] = new Array<number>(candidates.length).fill(-1);
+  const compNextProposal: number[] = new Array<number>(companies.length).fill(0);
+  const candNextProposal: number[] = new Array<number>(candidates.length).fill(0);
+
+  for (let i = 0; i < offers.length; ++i) {
+    const offer = offers[i];
+    const proposerPreferenceArr = offer.fromCo ? companies[offer.from] : candidates[offer.from];
+    const receiverPreferenceArr = offer.fromCo ? candidates[offer.to] : companies[offer.to];
+    const propMatch = offer.fromCo ? compMatched : candMatched;
+    const receivMatch = offer.fromCo ? candMatched : compMatched;
+    const nextProposal = offer.fromCo ? compNextProposal : candNextProposal;
+    console.log("new proposal");
+
+    // check if the proposer is proposing to someone not in order
+    const receiverRating = proposerPreferenceArr.indexOf(offer.to);
+    if (nextProposal[offer.from] !== receiverRating) {
+      console.log("preference is not in order");
+      return false;
+    }
+    //otherwise update to the next proposal
+    nextProposal[offer.from] += 1;
+    console.log("preference is in order");
+
+    // check if the receiver is already matched
+    const curr = receivMatch[offer.to];
+    if (propMatch[offer.from] === -1 && curr !== -1) {
+      // check if the receiver prefers the proposer over it's current match
+      if (receiverPreferenceArr.indexOf(offer.from) < receiverPreferenceArr.indexOf(curr)) {
+        // update
+        propMatch[offer.from] = offer.to;
+        receivMatch[offer.to] = offer.from;
+        propMatch[curr] = -1;
+      }
+    } else if (propMatch[offer.from] === -1 && curr === -1) {
+      // otherwise accept the proposal
+      propMatch[offer.from] = offer.to;
+      receivMatch[offer.to] = offer.from;
+    }
+  }
+
+  // check if the output is the same
+  for (let h = 0; h < hires.length; ++h) {
+    const hire = hires[h];
+    if (compMatched[hire.company] !== hire.candidate || candMatched[hire.candidate] !== hire.company) {
+      console.log("output is not the same");
+      return false;
+    }
+  }
+
+  // check if the lengths of the pairs formed through the follow of trace have the same length
+  if (compMatched.filter(e => e !== -1).length !== hires.length) {
+    console.log(compMatched.filter(e => e !== -1).length);
+    console.log(hires.length);
+    console.log("lengths are not the same");
+    return false;
+  }
+
+  // lastly if there are no problems then return true
+  return true;
+}
+
 export function stableMatchingRunOracle(makeStableMatchingTrace: StableMatcherWithTrace): void {
   for (let i = 0; i < NUM_TESTS; ++i) {
     const companies = generateInput(N);
@@ -105,5 +169,6 @@ export function stableMatchingRunOracle(makeStableMatchingTrace: StableMatcherWi
     console.log(trace, out);
 
     // TODO: Assertions go here
+    assert(checkValidTrace(companies, candidates, trace, out));
   }
 }

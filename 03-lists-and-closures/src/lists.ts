@@ -36,19 +36,29 @@ export function everyNList<T>(lst: List<T>, n: number): List<T> {
 }
 
 export function everyNRev<T>(lst: List<T>, n: number): List<T> {
-  // TODO: Implement this function
+  // TODO: Implement this function;
   if (invalidN(n)) return empty();
-  const revlst = reverseList(lst);
+  let i = 1;
 
-  let i = 0;
-  return revlst.filter(() => ++i % n === 0);
+  const revlst = lst.reduce((acc, e) => node(e, acc), empty<T>());
+  const reducedlst = revlst.reduce((acc, e) => {
+    if (i++ === n) {
+      i = 1;
+      acc = node(e, acc);
+    }
+    return acc;
+  }, empty<T>());
+  return reducedlst.reduce((acc, e) => node(e, acc), empty<T>());
 }
 
 export function everyNCond<T>(lst: List<T>, n: number, cond: (e: T) => boolean): List<T> {
   // TODO: Implement this function
   if (invalidN(n)) return empty();
   let i = 0;
-  return lst.filter((e: T) => ++i % n === 0 && cond(e));
+  return lst.filter((e: T) => {
+    const nthElement = ++i % n === 0;
+    return cond(e) && nthElement;
+  });
 }
 
 export function productsHelper(lst: List<number>, cond: (n: number) => boolean): List<number> {
